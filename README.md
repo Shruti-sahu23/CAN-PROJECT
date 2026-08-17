@@ -1,205 +1,244 @@
-# 🚗 CAN-Based Distributed Engine Monitoring & Vehicle Control System
+<div align="center">
 
-![Embedded C](https://img.shields.io/badge/Language-Embedded%20C-blue.svg)
-![Microcontroller](https://img.shields.io/badge/MCU-NXP%20LPC2129%20%28ARM7TDMI--S%29-orange.svg)
-![Protocol](https://img.shields.io/badge/Protocol-CAN%202.0B-green.svg)
-![Toolchain](https://img.shields.io/badge/IDE-Keil%20uVision-informational.svg)
-![Simulation](https://img.shields.io/badge/Simulator-Proteus%208-purple.svg)
-![License](https://img.shields.io/badge/License-MIT-brightgreen.svg)
+# 🚗 CAN-Bus Automotive Engine Monitoring & Distributed Vehicle Control System
 
-A high-reliability, multi-node distributed automotive ECU system designed around **NXP LPC2129 (ARM7TDMI-S)** microcontrollers, bare-metal **Embedded C**, and the **CAN 2.0B** protocol operating at **250 kbps**.
+### **A Multi-ECU Distributed Embedded Architecture on NXP LPC2129 ARM7TDMI-S**
 
----
+[![Author](https://img.shields.io/badge/Author-Shruti%20Sahu-7c3aed?style=for-the-badge&logo=github)](https://github.com/)
+[![Microcontroller](https://img.shields.io/badge/MCU-NXP%20LPC2129%20(ARM7)-0284c7?style=for-the-badge&logo=arm)](https://www.nxp.com/)
+[![Protocol](https://img.shields.io/badge/Bus-CAN%202.0B%20%40%20250%20kbps-d97706?style=for-the-badge)](https://en.wikipedia.org/wiki/CAN_bus)
+[![Firmware](https://img.shields.io/badge/Firmware-Embedded%20C%20(ISO%20C99)-16a34a?style=for-the-badge&logo=c)](https://en.wikipedia.org/wiki/Embedded_C)
+[![Toolchain](https://img.shields.io/badge/Toolchain-Keil%20µVision%20%7C%20Proteus-9333ea?style=for-the-badge)](https://www.keil.com/)
 
-## 📑 Table of Contents
-- [📌 Project Overview](#-project-overview)
-- [🏗️ System Architecture](#️-system-architecture)
-- [📡 CAN Protocol & Network Matrix](#-can-protocol--network-matrix)
-- [🕹️ Distributed ECU Nodes](#️-distributed-ecu-nodes)
-  - [1. Main Instrument Cluster ECU](#1-main-instrument-cluster-ecu)
-  - [2. Power Window Body Control ECU](#2-power-window-body-control-ecu)
-  - [3. ADAS Reverse Radar ECU](#3-adas-reverse-radar-ecu)
-- [🖥️ Custom 20×4 LCD User Interface](#️-custom-204-lcd-user-interface)
-- [📂 Repository Structure](#-repository-structure)
-- [🛠️ Build & Simulation Setup](#️-build--simulation-setup)
-- [📈 Future Roadmap](#-future-roadmap)
-- [👨‍💻 Author & Credits](#-author--credits)
+<br>
+
+<p align="center">
+  <b>Real-Time Engine Telemetry</b> • <b>8-Level Power Window Position Indicator</b> • <b>Jitter-Free IR Radar</b> • <b>Active CAN Node Supervision & Auto-Recovery</b>
+</p>
+
+</div>
 
 ---
 
-## 📌 Project Overview
+## 📑 Executive Overview
 
-Modern vehicles rely on dozens of Electronic Control Units (ECUs) exchanging critical telemetry over robust serial buses. This project implements a **3-node CAN 2.0B automotive network** that replicates real-world vehicle subsystems:
+This repository contains the complete firmware, hardware design specifications, and engineering documentation for an **automotive-grade distributed electronic control system**. Built on three **NXP LPC2129 ARM7TDMI-S** microcontrollers, the system communicates over a high-speed **ISO 11898 CAN 2.0B bus at 250 kbps**.
 
-1. **Engine Telemetry & Cluster Display**: Monitored via a 1-Wire DS18B20 digital thermal sensor with multi-tier warning thresholds.
-2. **Body ECU Window Control**: Actuated via an L293D H-Bridge motor driver with directional status feedback.
-3. **ADAS Parking Assist**: Proximity tracking using a Sharp GP2D12 sensor with dynamic distance bar rendering.
-4. **Custom HD44780 CGRAM Glyphs**: Hardware-level custom character generation for degree symbols (`°`), directional arrows (`▲`/`▼`), and solid distance blocks (`█`).
+Unlike simplistic single-board prototypes, this project implements a **true 3-node distributed vehicle network** featuring real-time telemetry streaming, multi-stage digital sensor filtering, boundary-protected position actuation, and **active software watchdog supervision** that detects physical node disconnections and recovers automatically without system freezes.
 
 ---
 
-## 🏗️ System Architecture
+## 🏛️ System Architecture & Block Diagram
 
-```mermaid
-graph TD
-    subgraph CAN Bus Line [CANH / CANL Differential Pair @ 250 kbps]
-        Term1[120Ω Term] --- BUS --- Term2[120Ω Term]
-    end
-
-    subgraph Node 1: Main Instrument Cluster ECU
-        MCU1[LPC2129 Master] --> Trans1[MCP2551 Transceiver]
-        Sensor1[DS18B20 Temp Sensor] --> MCU1
-        MCU1 --> LCD[20x4 LCD HD44780]
-        MCU1 --> Buttons[Dashboard Switches]
-    end
-
-    subgraph Node 2: Body Control Power Window ECU
-        MCU2[LPC2129 Slave 1] --> Trans2[MCP2551 Transceiver]
-        MCU2 --> Motor[L293D H-Bridge Motor Driver]
-    end
-
-    subgraph Node 3: ADAS Reverse Radar ECU
-        MCU3[LPC2129 Slave 2] --> Trans3[MCP2551 Transceiver]
-        DistanceSensor[GP2D12 IR Sensor / ADC] --> MCU3
-    end
-
-    Trans1 <==> BUS
-    Trans2 <==> BUS
-    Trans3 <==> BUS
+```text
+                           =======================================================
+                           ||   DIFFERENTIAL CAN BUS (CAN_H / CAN_L @ 250 kbps)  ||
+                           =======================================================
+                            |  [120Ω Term]         |                 |  [120Ω Term]
+                     [MCP2551 Transceiver]  [MCP2551 Transceiver]  [MCP2551 Transceiver]
+                            |                      |                 |
+                     P0.24(TD1)/P0.25(RD1)  P0.24(TD1)/P0.25(RD1)  P0.24(TD1)/P0.25(RD1)
+                            |                      |                 |
+                   +--------+--------+    +--------+--------+    +---+-------------+
+                   |  NODE 1: MASTER |    |  NODE 2: WINDOW |    |  NODE 3: RADAR  |
+                   | TELEMETRY ECU   |    |  POSITION ECU   |    |  PROXIMITY ECU  |
+                   |  (LPC2129 ARM7) |    |  (LPC2129 ARM7) |    |  (LPC2129 ARM7) |
+                   +--------+--------+    +--------+--------+    +---+-------------+
+                            |                      |                 |
+           +----------------+---------------+      |                 |
+           |                |               |      |                 |
+      [20×4 LCD]       [DS18B20]       [3 Buttons] |            [Sharp GP2D12]
+      Dashboard       Temperature      Inputs      |            Analog IR Sensor
+     (P0.0–P0.10)       (P0.22)     (P0.14/15/16)  |            (P0.27 / AD0.0)
+                                                   |                 |
+                                          [8-LED Position Bar]  [3-Stage DSP Filter]
+                                             Glass Levels 0-8     Median + EMA + Hyst
+                                               (P0.0 – P0.7)
 ```
 
 ---
 
-## 📡 CAN Protocol & Network Matrix
+## 🧰 Hardware Bill of Materials (Exact Components)
 
-The network operates on standard CAN 2.0B ID frames with deterministic message priorities:
-
-| Message ID | Origin ECU | DLC | Description / Data Payload | Priority |
-| :--- | :--- | :---: | :--- | :---: |
-| `0x101` | Main Node | 1 | Power Window Command (`0x01`: Open, `0x02`: Close, `0x00`: Stop) | High |
-| `0x102` | Main Node | 1 | ADAS Control Command (`0x01`: Enable Radar, `0x00`: Disable) | High |
-| `0x103` | Main Node | 1 | Remote Telemetry Request Ping | Medium |
-| `0x201` | Window Node | 2 | Window Glass State (`Byte 0`: Height %, `Byte 1`: Direction `▲/▼`) | Normal |
-| `0x202` | Reverse Node | 2 | Obstacle Proximity (`Byte 0`: Distance in cm, `Byte 1`: Zone Alert Level) | Normal |
-
----
-
-## 🕹️ Distributed ECU Nodes
-
-### 1. Main Instrument Cluster ECU (`Main_Node/`)
-* **Role**: Master telemetry collector and UI renderer.
-* **Key Components**: LPC2129, 20×4 LCD Display, DS18B20 Temperature Sensor, External Interrupt switches (`EINT1`/`EINT2`).
-* **Key Tasks**:
-  * Samples engine temperature via 1-Wire protocol.
-  * Processes non-blocking CAN frames from slave nodes.
-  * Manages automotive splash screen, engine telemetry mode, window status mode, and ADAS radar screen.
-
-### 2. Power Window Body Control ECU (`Window_glass_control_Node/`)
-* **Role**: Actuates motor and tracks 4-step glass positioning.
-* **Key Components**: LPC2129, L293D H-Bridge Driver, DC Motor.
-* **Key Tasks**:
-  * Listens for `0x101` execution commands from CAN bus.
-  * Drives motor bidirectionally while updating glass position (0%, 33%, 66%, 100%).
-  * Broadcasts current position frame (`0x201`) back to Main Node.
-
-### 3. ADAS Reverse Radar ECU (`Reverse_alert_node/`)
-* **Role**: Rear collision warning and distance measurement.
-* **Key Components**: LPC2129, 10-bit On-Chip ADC Driver, Sharp GP2D12 IR Sensor.
-* **Key Tasks**:
-  * Digitizes analog sensor values via internal 10-bit ADC.
-  * Linearizes distance readings into accurate centimeter values.
-  * Transmits distance & warning zone alerts (`0x202`) over CAN.
+| # | Hardware Component | Qty | Primary Purpose & Function | Physical Node Mapping |
+| :-: | :--- | :-: | :--- | :--- |
+| **1** | **NXP LPC2129** | 3 | 32-bit ARM7TDMI-S Microcontrollers @ 60 MHz | Master ECU, Window ECU, Radar ECU |
+| **2** | **Microchip MCP2551** | 3 | High-Speed CAN Transceivers (ISO 11898) | All 3 Nodes (`P0.24 TD1`, `P0.25 RD1`) |
+| **3** | **Maxim DS18B20** | 1 | Digital 1-Wire Engine Temperature Sensor | Main Telemetry ECU (`P0.22` with 4.7kΩ pull-up) |
+| **4** | **Sharp GP2D12** | 1 | Analog Infrared Distance / Proximity Sensor | Reverse Radar ECU (`P0.27 / AD0.0`) |
+| **5** | **20×4 Alphanumeric LCD** | 1 | Instrument Cluster Digital Telemetry Display | Main Telemetry ECU (`P0.0–P0.10`) |
+| **6** | **Position Indicator LEDs** | 8 | Window Glass Position Indicators (0 to 8 Levels) | Window Control ECU (`P0.0–P0.7` Active LOW) |
+| **7** | **Push Button Switches** | 3 | Driver Inputs: Win UP, Win DOWN, Reverse Mode | Main Telemetry ECU (`P0.16`, `P0.14`, `P0.15`) |
+| **8** | **CAN Differential Bus** | 1 | Shielded Twisted Pair + Two 120Ω Terminations | Network Backbone @ 250 kbps |
 
 ---
 
-## 🖥️ Custom 20×4 LCD User Interface
+## ⚙️ Distributed ECU Module Specifications
 
-The main instrument cluster features dedicated 20×4 screen pages with custom CGRAM character generation:
+### 🚗 ECU 1: Master Instrument Cluster & Telemetry Supervisor
+* **Central Dashboard**: Drives the **20×4 LCD** via 8-bit parallel bus (`P0.0–P0.7` Data, `P0.8` EN, `P0.9` RS, `P0.10` RW) with custom CGRAM icons (`°`, `▲`, `▼`).
+* **1-Wire Temperature Acquisition**: Bit-banged 1-Wire master driver on `P0.22` with $0.0625^\circ\text{C}$ resolution and line fault detection.
+* **Driver Input Handling**: Hardware-debounced switch polling on `P0.16` (UP), `P0.14` (DOWN), and `P0.15` (Reverse).
+* **Software Watchdog Supervision**: Monitors CAN communication response times ($500\text{ ms}$ for Window, $800\text{ ms}$ for Radar) and triggers automatic fallback recovery.
 
-```
-+--------------------+   +--------------------+
-|** ENGINE TELEMETRY |   |*** POWER WINDOW ***|
-|Temp: 42°C [NORMAL] |   |State : OPENING ▲   |
-|Status: ALL SYSTEMS |   |Glass Pos : [████  ]|
-|CAN Bus: 250 kbps OK|   |Height    : 66%     |
-+--------------------+   +--------------------+
+### 🪟 ECU 2: Body Control & Window Position Indicator
+* **8-Level Discrete Position Tracking**: Directly controls 8 physical LEDs across `P0.0 – P0.7` representing discrete levels ($0$ = 0% glass to $8$ = 100% closed glass).
+* **Single Tap vs. Continuous Hold**:
+  * *Single Tap*: Increments or decrements **exactly 1 LED** per tap.
+  * *Continuous Hold*: Automatically steps level-by-level (every $250\text{ ms}$) while held down.
+* **Boundary Safeguards**: Ignores invalid movement requests at Level 8 (Fully Closed) and Level 0 (Fully Open).
+* **Bidirectional Feedback**: Transmits confirmation frame `0x201` with exact level ($0..8$) and percentage ($0..100\%$).
 
-+--------------------+   +--------------------+
-|*** ADAS RADAR ***  |   |⚠️ WARNING ALERT! ⚠️ |
-|Dist: 15 cm         |   |ENGINE OVERHEAT!    |
-|Zone: CRITICAL 🔴   |   |Temp: 95°C          |
-|Bar: [████████████] |   |PULL OVER SAFELY!   |
-+--------------------+   +--------------------+
+### 🚧 ECU 3: ADAS Reverse Proximity Radar
+* **10-Bit ADC Sampling**: Samples analog output of the Sharp GP2D12 sensor on `P0.27 (AD0.0)` with a dedicated ADC clock divider (`CLKDIV = 14` $\rightarrow 4.0\text{ MHz} \le 4.5\text{ MHz}$).
+* **3-Stage Jitter-Free DSP Pipeline**:
+  1. **20-Sample Median & Trimmed Mean Filter**: Samples 20 consecutive readings, sorts them, and computes the trimmed average of the middle 8 values to reject noise spikes.
+  2. **Exponential Moving Average (EMA)**: Low-pass filter with smoothing factor $\alpha = 0.15$.
+  3. **$\pm 2.0\text{ cm}$ Schmitt-Trigger Deadband Hysteresis**: Completely stops single-centimeter LCD toggling and flickering.
+* **Zone Classification**: Categorizes distance into **Safe ($\ge 80\text{ cm}$)**, **Warning ($40-79\text{ cm}$)**, **Danger ($20-39\text{ cm}$)**, and **Critical Stop ($< 20\text{ cm}$)**.
+
+---
+
+## 📡 CAN 2.0B Communication Protocol Matrix
+
+All ECUs communicate using 11-bit standard CAN identifiers over a $250\text{ kbps}$ bus (`C1BTR = 0x001C001D` @ $60\text{ MHz}$ PCLK):
+
+| CAN ID | Source ECU | Destination ECU | DLC | Data Byte 0 | Data Byte 1 | Description & Timeout Handling |
+| :---: | :---: | :---: | :---: | :---: | :---: | :--- |
+| **`0x101`** | Main Node | Window Node | 1 | `0x01`=UP / `0x02`=DOWN | — | Window Step Command ($500\text{ ms}$ timeout watchdog) |
+| **`0x102`** | Main Node | Reverse Node | 1 | `0x01`=ON / `0x00`=OFF | — | Reverse Radar Mode Toggle Frame |
+| **`0x103`** | Reverse Node | Main Node | 2 | Distance ($10..120\text{ cm}$) | Zone ($1..4$) | Proximity Telemetry Stream ($800\text{ ms}$ signal loss watchdog) |
+| **`0x201`** | Window Node | Main Node | 2 | Level ($0..8$) | Percentage ($0..100\%$) | 8-LED Position Status Acknowledgement |
+
+---
+
+## ⭐ Active Node Supervision & Fault Recovery Workflow
+
+```text
+  Driver Action (Button Press)
+              │
+              ▼
+   Transmit CAN Frame (0x101 / 0x102)
+              │
+              ▼
+   Wait for Node Response Frame
+              │
+     ┌────────┴────────┐
+     │                 │
+[Response Received] [Timeout / Signal Lost]
+     │                 │
+  Update Display       Display Dedicated 20×4 LCD
+  & 8-LED Actuators    Error Warning Screen (1.8s)
+                       │
+                       ▼
+                 Flag "! WARN: ECU OFFLINE"
+                 & Safely Restore Telemetry Dash
 ```
 
 ---
 
-## 📂 Repository Structure
+## 🖥️ 20×4 LCD Telemetry & Error Screen Gallery
 
+```text
+┌────────────────────┐  ┌────────────────────┐
+│====================│  │--- VEHICLE DASH ---│
+│  SMART VEHICLE ECU │  │TEMP  : 32.5°C [ OK ]│
+│ ENGINE & SAFETY OS │  │STATUS: ALL ECUS OK │
+│====================│  │WIN: 50%    REV: OFF│
+└────────────────────┘  └────────────────────┘
+   1. Boot Screen           2. Normal Dashboard
+
+┌────────────────────┐  ┌────────────────────┐
+│! CAN BUS WARNING ! │  │! CAN BUS WARNING ! │
+│NODE: WINDOW MODULE │  │NODE: REVERSE RADAR │
+│ERROR: NO RESPONSE  │  │ERROR: NO RESPONSE  │
+│STATUS: OFFLINE /ERR│  │STATUS: OFFLINE /ERR│
+└────────────────────┘  └────────────────────┘
+  3. Window Node Error     4. Reverse Node Error
+
+┌────────────────────┐  ┌────────────────────┐
+│=== POWER WINDOW ===│  │<<  REVERSE RADAR >>│
+│MOTION: ROLLING UP ▲│  │DIST  : 110 cm[SAFE]│
+│GLASS: [||||....]50%│  │ZONE  : GREEN / OK  │
+│STATUS: LEVEL 4 OF 8│  │BAR   :[||||||||||||]│
+└────────────────────┘  └────────────────────┘
+ 5. Window Level 4 (50%)  6. Reverse Radar (Safe)
 ```
+
+---
+
+## 📁 Repository Structure
+
+```text
 CAN-Based-Engine-Monitoring-and-Vehicle-Control-System/
-├── Main_Node/                         # Master ECU (Instrument Cluster)
-│   ├── MAIN_NODE.c                    # Execution Loop & State Machine
-│   ├── CAN.c / CAN.h                  # 250 kbps CAN1 Driver
-│   ├── dashboard.c / dashboard.h      # Telemetry & UI Render Logic
-│   ├── LCD_functions.c / LCD.h        # HD44780 Driver & Custom CGRAM
-│   ├── DS18B20.c / DS18B20.h          # 1-Wire Digital Thermal Driver
-│   ├── EINT.c / EINT.h                # Debounced Button Interrupts
-│   ├── Startup.s                      # ARM7 Vector Table
-│   └── project_functions.c            # Non-blocking CAN Packet Parsing
+├── Main_Node/                         # Master Telemetry & Instrument Cluster ECU
+│   ├── MAIN_NODE.c                    # Main Loop & Central System Coordination
+│   ├── dashboard.c / .h               # 20×4 LCD Telemetry & Error Screen Graphics
+│   ├── project_functions.c / .h       # CAN Actions & Timeout Supervision Watchdog
+│   ├── LCD_functions.c / LCD.h        # HD44780 8-Bit Driver & Custom CGRAM Glyphs
+│   ├── DS18B20.c / .h                 # 1-Wire Temperature Driver with Fault Check
+│   ├── EINT.c / .h                    # Debounced Push Button Input Driver
+│   ├── CAN.c / .h                     # LPC2129 CAN1 Controller Hardware Driver
+│   ├── CAN_defines.h                  # Protocol IDs, Command Codes & Zone IDs
+│   ├── delays.c / .h                  # Calibrated Microsecond/Millisecond Delays
+│   ├── types.h                        # Standard Fixed-Width Typedefs
+│   └── Startup.s                      # ARM7 Vector Table & Startup Assembly
 │
-├── Window_glass_control_Node/         # Body ECU (Power Window Driver)
-│   ├── MAIN_WINDOW_NODE.c             # ECU Listener Loop
-│   ├── window_control.c / .h          # L293D Motor Controller
-│   ├── CAN.c / CAN.h                  # CAN Transceiver Logic
-│   └── Startup.s                      # ARM7 Vector Table
+├── Window_glass_control_Node/         # 8-LED Window Position Indicator ECU
+│   ├── MAIN_WINDOW_NODE.c             # Event-Driven CAN Message Listener Loop
+│   ├── window_control.c / .h          # 8-Level Discrete LED Stepping & Limits (P0.0–P0.7)
+│   ├── CAN.c / .h                     # Hardware CAN1 Driver
+│   ├── CAN_Defines.h                  # CAN Protocol Constants
+│   ├── delays.c / .h                  # Delay Routines
+│   ├── types.h                        # Standard Typedefs
+│   └── Startup.s                      # ARM7 Startup Assembly
 │
-├── Reverse_alert_node/                # ADAS ECU (Reverse Proximity Radar)
-│   ├── MAIN_REVERSE_ALERT_NODE.c      # Sensor Polling Loop
-│   ├── distance_sensor.c / .h         # ADC Linearization & Zone Logic
-│   ├── adc.c / adc.h                  # 10-bit Successive Approx ADC
-│   └── CAN.c / CAN.h                  # CAN Telemetry Output
+├── Reverse_alert_node/                # ADAS Reverse Proximity Radar ECU
+│   ├── MAIN_REVERSE_ALERT_NODE.c      # Reverse Mode Telemetry Streaming Loop
+│   ├── distance_sensor.c / .h         # 20-Sample Trimmed Mean, EMA & Deadband Filter
+│   ├── adc.c / .h                     # 10-Bit ADC Driver (P0.27 / AD0.0)
+│   ├── adc_defines.h                  # ADC Bitmask & Clock Divider Configuration
+│   ├── CAN.c / .h                     # Hardware CAN1 Driver
+│   ├── CAN_Defines.h                  # CAN Protocol Constants
+│   ├── delays.c / .h                  # Delay Routines
+│   ├── types.h                        # Standard Typedefs
+│   └── Startup.s                      # ARM7 Startup Assembly
 │
-├── Documentation/                     # Technical Specs & Wiring
-│   ├── SYSTEM_DOCUMENTATION.md        # Deep Architecture & Flowcharts
-│   ├── PINOUT_AND_WIRING.md           # Pin Connections & Schematic Notes
-│   └── LCD_SCREENS_GALLERY.md         # UI Layout Reference
+├── Documentation/                     # Engineering Documentation & Schematics
+│   ├── Images/                        # System Diagrams & Vector Block Diagrams
+│   │   └── system_block_diagram.svg   # Vector Network Block Diagram
+│   ├── PINOUT_AND_WIRING.md           # LPC2129 Pinout & Circuit Wiring Tables
+│   ├── SYSTEM_DOCUMENTATION.md        # Technical System Specifications
+│   ├── LCD_SCREENS_GALLERY.md         # 20×4 LCD Screen Gallery & Transitions
+│   └── documentation.html             # HTML Source for Headless PDF Generation
 │
+├── Project_Documentation.pdf          # 5-Page Comprehensive Engineering PDF
 └── README.md                          # Repository Documentation
 ```
 
 ---
 
-## 🛠️ Build & Simulation Setup
+## ▶️ Build & Simulation Instructions
 
-### 1. Build via Keil uVision
-1. Open Keil uVision and load the node source files.
-2. Select Target Device: **NXP → LPC2129**.
-3. Set CPU Clock: **12.0 MHz** (CCLK = 60.0 MHz with $5\times$ PLL).
-4. Under **Options for Target → Output**, check **Create HEX File**.
-5. Build target (`F7`) to generate compiled `.hex` binaries for each node.
+### 1. Keil µVision Compilation
+1. Open Keil µVision and load the project for each node.
+2. Ensure Target Device is configured as **NXP LPC2129** with a **`12.0 MHz`** crystal (CCLK = 60 MHz via on-chip PLL).
+3. Under **Project Options $\rightarrow$ Output**, verify **"Create HEX File"** is enabled.
+4. Press **`F7`** (Rebuild All) to compile clean `.hex` binaries.
 
-### 2. Simulate via Proteus VSM
-1. Place 3 × **LPC2129** microcontrollers and 3 × **MCP2551** transceivers.
-2. Wire `CANH` and `CANL` in parallel across all transceivers with $120\,\Omega$ termination resistors at both ends.
-3. Assign the respective `.hex` firmware binary to each LPC2129 MCU.
-4. Attach peripherals: **LM044L (20×4 LCD)**, **DS18B20**, **L293D + DC Motor**, and **Potentiometer/GP2D12**.
-5. Run the interactive simulation.
-
----
-
-## 📈 Future Roadmap
-- [ ] **CAN Bus-Off & Error Passive Diagnostics**: Hardware fault recovery logic.
-- [ ] **Diagnostic Trouble Codes (DTC)**: Non-volatile EEPROM fault logging.
-- [ ] **FreeRTOS Port**: Task-based priority scheduling for ECU loops.
-- [ ] **OBD-II Interface Compatibility**: Standardized PID query support.
+### 2. Proteus Circuit Simulation
+1. Place 3× `LPC2129` microcontrollers and 3× `MCP2551` transceivers in Proteus 8.
+2. Wire the differential `CANH` and `CANL` bus with two $120\Omega$ termination resistors.
+3. Wire the peripherals:
+   - **Main Node**: 20×4 LCD to `P0.0–P0.10`, DS18B20 to `P0.22`, Buttons to `P0.14, P0.15, P0.16`.
+   - **Window Node**: 8 LEDs to `P0.0–P0.7` (Active LOW).
+   - **Reverse Node**: Sharp GP2D12 analog output to `P0.27 (AD0.0)`.
+4. Load each node's `.hex` file and press **Play** to run simulation.
 
 ---
 
-## 👨‍💻 Author
+## 👩‍💻 Author
 
-**Embedded Systems Engineer**  
-Specializing in Embedded C, Microcontrollers (ARM7 / ARM Cortex-M), CAN Bus Protocol, and Real-Time Operating Systems.
-
----
-*If you find this project helpful, feel free to give it a ⭐ star on GitHub!*
+* **Shruti Sahu**
+* **Project**: CAN-Based Engine Monitoring and Vehicle Control System
+* **Specialization**: Embedded Systems & Automotive Electronics (ARM7 / CAN Protocol)
