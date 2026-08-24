@@ -1,6 +1,6 @@
 #ifndef __PROJECT_FUNCTIONS_H__
 #define __PROJECT_FUNCTIONS_H__
-
+ 
 #include "types.h"
 #include "CAN.h"
 
