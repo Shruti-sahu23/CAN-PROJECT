@@ -1,6 +1,6 @@
 #ifndef __LCD_H__
 #define __LCD_H__
-
+ 
 #include <lpc21xx.h>
 #include "types.h"
 
