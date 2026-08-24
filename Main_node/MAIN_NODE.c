@@ -2,7 +2,7 @@
  * @file MAIN_NODE.c
  * @brief Master Instrument Cluster ECU Main Execution Entry Point (Interrupt-Driven Architecture)
  * @author Shruti Sahu
- * 
+ *  
  * Hardware Connections & Interrupt Mapping:
  * - 20x4 LCD Display: P0.0 to P0.7 (Data), P0.8 (EN), P0.9 (RS), P0.10 (RW)
  * - DS18B20 1-Wire Temp Sensor: P0.22 (DQ)
