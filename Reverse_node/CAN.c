@@ -3,7 +3,7 @@
  * @brief Reverse Node CAN Controller Driver Implementation with VIC Interrupt ISR
  * @author Shruti Sahu
  */
-
+ 
 #include "CAN.h" /* Include CAN driver header file */
 
 volatile CAN_MSG g_can_rx_msg;  /* Global message structure to store frame from ISR */
