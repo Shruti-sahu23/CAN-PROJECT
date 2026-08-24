@@ -2,7 +2,7 @@
  * @file CAN.h
  * @brief Reverse Node CAN Driver Header File with VIC RX Interrupt ISR
  * @author Shruti Sahu
- */
+ */ 
 
 #ifndef __CAN_H__ /* Prevent multiple inclusions */
 #define __CAN_H__ /* Define header guard token */
