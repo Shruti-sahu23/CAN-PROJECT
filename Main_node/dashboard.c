@@ -2,7 +2,7 @@
  * @file dashboard.c
  * @brief 20x4 LCD Telemetry Dashboard with Strict 20-Character Line Boundary Enforcement & Detailed Line-by-Line Comments
  * @author Shruti Sahu
- * 
+ *  
  * Every string output to the 20x4 LCD display is strictly bounded to 20 characters per line
  * to prevent line wrapping, buffer overflow, and visual screen flickering.
  */
