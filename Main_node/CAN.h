@@ -2,7 +2,7 @@
  * @file CAN.h
  * @brief LPC2129 Hardware CAN Controller Driver Header File with VIC RX Interrupt ISR
  * @author Shruti Sahu
- */
+ */ 
 
 #ifndef __CAN_H__ /* Prevent multiple inclusions of header file */
 #define __CAN_H__ /* Define header guard token */
