@@ -1,6 +1,6 @@
 #ifndef __CAN_DEFINES_H__
 #define __CAN_DEFINES_H__
- 
+  
 /* Standard CAN Message IDs for Distributed System */
 #define CAN_ID_WINDOW_CTRL      0x101  /* Main Node -> Window Node */
 #define CAN_ID_REVERSE_ENABLE   0x102  /* Main Node -> Reverse Node */
