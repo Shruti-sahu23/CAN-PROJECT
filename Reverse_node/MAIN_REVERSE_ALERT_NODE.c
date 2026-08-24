@@ -7,7 +7,7 @@
  * - Sharp GP2D12 IR Sensor: P0.27 (AD0.0 / AIN0)
  * - CAN1 Transceiver (MCP2551): P0.24 (TD1), P0.25 (RD1) with CAN RX Hardware ISR
  */
-
+ 
 #include <lpc21xx.h>        /* Include LPC2129 register definitions */
 #include "types.h"          /* Include standard data types */
 #include "delays.h"         /* Include delay routines */
