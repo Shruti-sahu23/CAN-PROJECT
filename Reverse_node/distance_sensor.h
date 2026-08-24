@@ -4,7 +4,7 @@
 #include "types.h"
 #include "adc.h"
 #include "CAN_Defines.h"
- 
+  
 /* Sensor Constants */
 #define DIST_SAMPLE_COUNT       20
 #define DIST_DEADBAND_CM        2.0f
