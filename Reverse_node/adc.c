@@ -1,6 +1,6 @@
 #include "adc.h"
 #include "delays.h"
-
+ 
 void ADC_Init(void)
 {
     /* 1. Configure P0.27 as AD0.0 / AIN0 analog input */
