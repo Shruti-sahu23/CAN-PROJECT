@@ -3,7 +3,7 @@
  * @brief High-Level User Mode Processing with Hardware Interrupt Events and Detailed Line-by-Line Comments
  * @author Shruti Sahu
  */
-
+ 
 #include "project_functions.h" /* Include high-level project functions header file */
 #include "dashboard.h"         /* Include 20x4 LCD dashboard graphics header file */
 #include "delays.h"            /* Include delay routines header file */
