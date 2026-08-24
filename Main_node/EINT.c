@@ -2,7 +2,7 @@
  * @file EINT.c
  * @brief LPC2129 Hardware External Interrupt (VIC ISR) Driver Implementation
  * @author Shruti Sahu
- * 
+ *  
  * Hardware Pin & Interrupt Mapping:
  * - P0.16 -> EINT0 (VIC Channel 14, Vector Slot 0): Window UP Button Interrupt
  * - P0.14 -> EINT1 (VIC Channel 15, Vector Slot 1): Window DOWN Button Interrupt
