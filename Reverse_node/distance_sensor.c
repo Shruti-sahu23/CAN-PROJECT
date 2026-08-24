@@ -4,7 +4,7 @@
 static f32 filtered_distance = 100.0f;
 static u8 last_stable_distance = 100;
 static u8 is_first_run = 1;
-
+ 
 void Distance_Sensor_Init(void)
 {
     ADC_Init();
