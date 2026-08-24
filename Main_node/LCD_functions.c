@@ -1,6 +1,6 @@
 #include "LCD.h"
 #include "delays.h"
-
+ 
 /* Custom Character Bitmaps (5x8 dots) */
 static const u8 custom_chars[4][8] = {
     /* 0: Degree Symbol (°) */
