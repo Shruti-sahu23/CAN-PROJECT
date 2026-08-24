@@ -1,6 +1,6 @@
 #ifndef __TYPES_H__
 #define __TYPES_H__
-
+ 
 /* Standard Integer Typedefs for LPC2129 ARM7 Architecture */
 typedef unsigned char      u8;
 typedef unsigned short int u16;
