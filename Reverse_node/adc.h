@@ -3,7 +3,7 @@
 
 #include <lpc21xx.h>
 #include "types.h"
-
+ 
 /* Function Prototypes */
 void ADC_Init(void);
 u16  ADC_Read(void);
