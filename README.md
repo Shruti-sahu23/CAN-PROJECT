@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚗 CAN-Bus Engine Monitoring & Distributed Vehicle Control System
+# 🚗 CAN-Based Engine Monitoring & Vehicle Control System
 
 ### **An Interrupt-Driven Multi-ECU Distributed Embedded Architecture on NXP LPC2129 ARM7TDMI-S**
 
