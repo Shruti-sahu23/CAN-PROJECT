@@ -4,7 +4,7 @@
 
 ### **An Interrupt-Driven Multi-ECU Distributed Embedded Architecture on NXP LPC2129 ARM7TDMI-S**
 
-[![Author](https://img.shields.io/badge/Author-Shruti%20Sahu-7c3aed?style=for-the-badge&logo=github)](https://github.com/)
+[![Author](https://img.shields.io/badge/Author-Shruti%20Sahu-7c3aed?style=for-the-badge&logo=github)](https://github.com/Shruti-sahu23)
 [![Microcontroller](https://img.shields.io/badge/MCU-NXP%20LPC2129%20(ARM7)-0284c7?style=for-the-badge&logo=arm)](https://www.nxp.com/)
 [![Interrupts](https://img.shields.io/badge/Architecture-Interrupt--Driven%20(VIC%20ISRs)-10b981?style=for-the-badge)](https://en.wikipedia.org/wiki/Interrupt)
 [![Protocol](https://img.shields.io/badge/Bus-CAN%202.0A%20%40%20250%20kbps-d97706?style=for-the-badge)](https://en.wikipedia.org/wiki/CAN_bus)
@@ -31,7 +31,7 @@ Unlike simplistic single-board prototypes, this project implements a **true 3-no
 
 ## 🏛️ System Architecture & Schematic Diagram
 
-![System Architecture Diagram](Documentation/Images/system_architecture_diagram.jpg)
+![System Architecture Diagram](https://raw.githubusercontent.com/Shruti-sahu23/CAN-PROJECT/main/Documentation/Images/system_architecture_diagram.jpg)
 
 ```text
                            =======================================================
@@ -129,22 +129,45 @@ All ECUs communicate using 11-bit standard CAN identifiers over a $250\text{ kbp
 
 ---
 
-## 📺 20×4 LCD Display Screen Gallery (Picture Format)
+## 📺 Complete 20×4 LCD Display Screen Gallery (All 16 Operating Stages)
 
-### 1. System Boot / Splash Screen
-![System Boot Splash Screen](Documentation/Images/lcd_splash_screen.png)
+### 1. System Boot & Initialization Stages
+| Stage | LCD Display Screen Picture |
+| :--- | :--- |
+| **Boot / Splash Screen** | ![Boot Screen](https://raw.githubusercontent.com/Shruti-sahu23/CAN-PROJECT/main/Documentation/Images/lcd_boot.png) |
 
-### 2. Main Vehicle Telemetry Dashboard (All ECUs Healthy)
-![Main Vehicle Dashboard](Documentation/Images/lcd_dashboard_normal.png)
+<br>
 
-### 3. Power Window Position Control Screen (Level 4 - 50% Glass)
-![Power Window Control Screen](Documentation/Images/lcd_window_control.png)
+### 2. Main Vehicle Telemetry Dashboard Stages
+| Operating Condition | LCD Display Screen Picture |
+| :--- | :--- |
+| **Normal Dashboard (All ECUs Healthy)** | ![Normal Dashboard](https://raw.githubusercontent.com/Shruti-sahu23/CAN-PROJECT/main/Documentation/Images/lcd_dash_normal.png) |
+| **ECU Offline Warning Dashboard** | ![ECU Warn Dashboard](https://raw.githubusercontent.com/Shruti-sahu23/CAN-PROJECT/main/Documentation/Images/lcd_dash_ecu_warn.png) |
+| **Temp Sensor Disconnected Dashboard** | ![Temp Sensor Disc Dashboard](https://raw.githubusercontent.com/Shruti-sahu23/CAN-PROJECT/main/Documentation/Images/lcd_dash_temp_disc.png) |
+| **Critical Overheat Alarm Screen** | ![Overheat Alarm Screen](https://raw.githubusercontent.com/Shruti-sahu23/CAN-PROJECT/main/Documentation/Images/lcd_overheat_alarm.png) |
 
-### 4. Reverse Distance Alert Screen (Safe Zone ≥ 80 cm)
-![Reverse Distance Alert Screen](Documentation/Images/lcd_reverse_radar.png)
+<br>
 
-### 5. CAN Bus Node Disconnection Error Warning Screen
-![CAN Bus Node Error Screen](Documentation/Images/lcd_node_error.png)
+### 3. Power Window Control & Error Stages
+| Window State | LCD Display Screen Picture |
+| :--- | :--- |
+| **Rolling UP (Level 4 - 50% Glass)** | ![Window Rolling UP](https://raw.githubusercontent.com/Shruti-sahu23/CAN-PROJECT/main/Documentation/Images/lcd_win_rolling_up.png) |
+| **Rolling DOWN (Level 3 - 37% Glass)** | ![Window Rolling DOWN](https://raw.githubusercontent.com/Shruti-sahu23/CAN-PROJECT/main/Documentation/Images/lcd_win_rolling_down.png) |
+| **Limit Safeguard (Fully Closed)** | ![Window Limit Closed](https://raw.githubusercontent.com/Shruti-sahu23/CAN-PROJECT/main/Documentation/Images/lcd_win_limit_closed.png) |
+| **Limit Safeguard (Fully Opened)** | ![Window Limit Opened](https://raw.githubusercontent.com/Shruti-sahu23/CAN-PROJECT/main/Documentation/Images/lcd_win_limit_open.png) |
+| **Window Node Error Warning Screen** | ![Window Node Error](https://raw.githubusercontent.com/Shruti-sahu23/CAN-PROJECT/main/Documentation/Images/lcd_win_node_error.png) |
+
+<br>
+
+### 4. Reverse Distance Alert & Error Stages
+| Radar State | LCD Display Screen Picture |
+| :--- | :--- |
+| **Safe Zone (≥ 80 cm)** | ![Reverse Safe Zone](https://raw.githubusercontent.com/Shruti-sahu23/CAN-PROJECT/main/Documentation/Images/lcd_reverse_safe.png) |
+| **Caution Zone (40 – 79 cm)** | ![Reverse Caution Zone](https://raw.githubusercontent.com/Shruti-sahu23/CAN-PROJECT/main/Documentation/Images/lcd_reverse_caution.png) |
+| **Warning Zone (16 – 39 cm)** | ![Reverse Warning Zone](https://raw.githubusercontent.com/Shruti-sahu23/CAN-PROJECT/main/Documentation/Images/lcd_reverse_warning.png) |
+| **Critical Stop Zone (≤ 15 cm)** | ![Reverse Critical Stop](https://raw.githubusercontent.com/Shruti-sahu23/CAN-PROJECT/main/Documentation/Images/lcd_reverse_critical_stop.png) |
+| **Distance Sensor Disconnected Screen** | ![Reverse Sensor Disc](https://raw.githubusercontent.com/Shruti-sahu23/CAN-PROJECT/main/Documentation/Images/lcd_reverse_sensor_disc.png) |
+| **Reverse Node Error Warning Screen** | ![Reverse Node Error](https://raw.githubusercontent.com/Shruti-sahu23/CAN-PROJECT/main/Documentation/Images/lcd_reverse_node_error.png) |
 
 ---
 
@@ -186,13 +209,24 @@ CAN-Based-Engine-Monitoring-and-Vehicle-Control-System/
 │   └── Startup.s                      # ARM7 Startup Assembly
 │
 ├── Documentation/                     # Engineering Documentation & Schematics
-│   ├── Images/                        # System Diagrams & Vector Block Diagrams
+│   ├── Images/                        # System Diagrams & Screen Image Cards
 │   │   ├── system_architecture_diagram.jpg # High-Res System Architecture Image
-│   │   ├── lcd_splash_screen.png      # Boot Screen PNG Card
-│   │   ├── lcd_dashboard_normal.png    # Main Dashboard PNG Card
-│   │   ├── lcd_window_control.png     # Window Screen PNG Card
-│   │   ├── lcd_reverse_radar.png      # Reverse Radar PNG Card
-│   │   ├── lcd_node_error.png         # Node Error Screen PNG Card
+│   │   ├── lcd_boot.png               # Boot Screen PNG Card
+│   │   ├── lcd_dash_normal.png        # Normal Dashboard PNG Card
+│   │   ├── lcd_dash_ecu_warn.png      # ECU Warn Dashboard PNG Card
+│   │   ├── lcd_dash_temp_disc.png     # Temp Disc Dashboard PNG Card
+│   │   ├── lcd_overheat_alarm.png     # Overheat Alarm PNG Card
+│   │   ├── lcd_win_rolling_up.png     # Window Rolling UP PNG Card
+│   │   ├── lcd_win_rolling_down.png   # Window Rolling DOWN PNG Card
+│   │   ├── lcd_win_limit_closed.png   # Window Limit Closed PNG Card
+│   │   ├── lcd_win_limit_open.png     # Window Limit Open PNG Card
+│   │   ├── lcd_win_node_error.png     # Window Node Error PNG Card
+│   │   ├── lcd_reverse_safe.png       # Reverse Safe Zone PNG Card
+│   │   ├── lcd_reverse_caution.png    # Reverse Caution Zone PNG Card
+│   │   ├── lcd_reverse_warning.png    # Reverse Warning Zone PNG Card
+│   │   ├── lcd_reverse_critical_stop.png # Reverse Critical Stop PNG Card
+│   │   ├── lcd_reverse_sensor_disc.png# Reverse Sensor Disc PNG Card
+│   │   ├── lcd_reverse_node_error.png # Reverse Node Error PNG Card
 │   │   └── system_block_diagram.svg   # Vector Network Block Diagram
 │   ├── PINOUT_AND_WIRING.md           # LPC2129 Pinout & Circuit Wiring Tables
 │   ├── SYSTEM_DOCUMENTATION.md        # Technical System Specifications
