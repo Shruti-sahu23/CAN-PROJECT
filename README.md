@@ -7,7 +7,7 @@
 [![Author](https://img.shields.io/badge/Author-Shruti%20Sahu-7c3aed?style=for-the-badge&logo=github)](https://github.com/)
 [![Microcontroller](https://img.shields.io/badge/MCU-NXP%20LPC2129%20(ARM7)-0284c7?style=for-the-badge&logo=arm)](https://www.nxp.com/)
 [![Interrupts](https://img.shields.io/badge/Architecture-Interrupt--Driven%20(VIC%20ISRs)-10b981?style=for-the-badge)](https://en.wikipedia.org/wiki/Interrupt)
-[![Protocol](https://img.shields.io/badge/Bus-CAN%202.0B%20%40%20250%20kbps-d97706?style=for-the-badge)](https://en.wikipedia.org/wiki/CAN_bus)
+[![Protocol](https://img.shields.io/badge/Bus-CAN%202.0A%20%40%20250%20kbps-d97706?style=for-the-badge)](https://en.wikipedia.org/wiki/CAN_bus)
 [![Firmware](https://img.shields.io/badge/Firmware-Embedded%20C%20(ISO%20C99)-16a34a?style=for-the-badge&logo=c)](https://en.wikipedia.org/wiki/Embedded_C)
 [![Toolchain](https://img.shields.io/badge/Toolchain-Keil%20µVision%20%7C%20Proteus-9333ea?style=for-the-badge)](https://www.keil.com/)
 
@@ -23,13 +23,15 @@
 
 ## 📑 Executive Overview
 
-This repository contains the complete firmware, hardware design specifications, and engineering documentation for a **distributed automotive embedded control system**. Built on three **NXP LPC2129 ARM7TDMI-S** microcontrollers, the system communicates over a high-speed **ISO 11898 CAN 2.0B bus at 250 kbps**.
+This repository contains the complete firmware, hardware design specifications, and engineering documentation for a **distributed automotive embedded control system**. Built on three **NXP LPC2129 ARM7TDMI-S** microcontrollers, the system communicates over a high-speed **ISO 11898 CAN 2.0A bus at 250 kbps**.
 
 Unlike simplistic single-board prototypes, this project implements a **true 3-node distributed vehicle network** featuring real-time telemetry streaming, hardware interrupt drivers, multi-stage digital sensor filtering, boundary-protected position actuation, and **active software watchdog supervision** that detects physical node disconnections, locks actuator states, and recovers automatically without system freezes.
 
 ---
 
-## 🏛️ System Architecture & Block Diagram
+## 🏛️ System Architecture & Schematic Diagram
+
+![System Architecture Diagram](Documentation/Images/system_architecture_diagram.jpg)
 
 ```text
                            =======================================================
@@ -114,7 +116,7 @@ Rather than using CPU polling, the system leverages the LPC2129 **Vectored Inter
 
 ---
 
-## 📡 CAN 2.0B Communication Protocol Matrix
+## 📡 CAN 2.0A Communication Protocol Matrix
 
 All ECUs communicate using 11-bit standard CAN identifiers over a $250\text{ kbps}$ bus (`C1BTR = 0x001C001D` @ $60\text{ MHz}$ PCLK):
 
@@ -127,129 +129,22 @@ All ECUs communicate using 11-bit standard CAN identifiers over a $250\text{ kbp
 
 ---
 
-## 📺 Complete 20×4 LCD Display Diagrams Gallery
-
-*(All screens strictly bounded to 20 characters per line maximum with zero line-wrapping or buffer overflow)*
+## 📺 20×4 LCD Display Screen Gallery (Picture Format)
 
 ### 1. System Boot / Splash Screen
-```text
-+--------------------+
-|====================|
-|  SMART VEHICLE ECU |
-| ENGINE & SAFETY OS |
-|====================|
-+--------------------+
-```
+![System Boot Splash Screen](Documentation/Images/lcd_splash_screen.png)
 
-### 2. Main Dashboard (Normal Operating State - All ECUs Healthy)
-```text
-+--------------------+
-|--- VEHICLE DASH ---|
-|TEMP:  32.5°C [ OK ]|
-|STATUS: ALL ECUS OK |
-|WIN: 50%    REV: OFF|
-+--------------------+
-```
+### 2. Main Vehicle Telemetry Dashboard (All ECUs Healthy)
+![Main Vehicle Dashboard](Documentation/Images/lcd_dashboard_normal.png)
 
-### 3. Main Dashboard (ECU Offline Warning State)
-```text
-+--------------------+
-|--- VEHICLE DASH ---|
-|TEMP:  32.5°C [ OK ]|
-|! WARN: ECU OFFLINE |
-|WIN: 50%    REV: OFF|
-+--------------------+
-```
+### 3. Power Window Position Control Screen (Level 4 - 50% Glass)
+![Power Window Control Screen](Documentation/Images/lcd_window_control.png)
 
-### 4. Main Dashboard (Temperature Sensor Disconnected State)
-```text
-+--------------------+
-|--- VEHICLE DASH ---|
-|TEMP:  32.5°C [DISC]|
-|STATUS: SENSOR LOST |
-|WIN: 50%    REV: OFF|
-+--------------------+
-```
+### 4. Reverse Distance Alert Screen (Safe Zone ≥ 80 cm)
+![Reverse Distance Alert Screen](Documentation/Images/lcd_reverse_radar.png)
 
-### 5. Critical Overheat Alarm Screen
-```text
-+--------------------+
-|********************|
-|! CRITICAL OVERHEAT!|
-|TEMP:  85.0°C [STOP]|
-|STOP VEHICLE SAFELY!|
-+--------------------+
-```
-
-### 6. Power Window Control Screen (Level 4 - 50% Glass)
-```text
-+--------------------+
-|=== POWER WINDOW ===|
-|MOTION: ROLLING UP ▲|
-|GLASS: [||||....]50%|
-|STATUS: LEVEL 4 OF 8|
-+--------------------+
-```
-
-### 7. Power Window Boundary Protection (Fully Closed Limit)
-```text
-+--------------------+
-|=== POWER WINDOW ===|
-|LIMIT : FULLY CLOSED|
-|GLASS:[||||||||]100%|
-|STATUS: FULLY CLOSED|
-+--------------------+
-```
-
-### 8. Window Node Disconnection Warning Screen (Position Locked)
-```text
-+--------------------+
-|! CAN BUS WARNING ! |
-|NODE: WINDOW MODULE |
-|ERROR: NO RESPONSE  |
-|STATUS: OFFLINE /ERR|
-+--------------------+
-```
-
-### 9. Reverse Distance Alert Screen (Safe Zone ≥ 80 cm)
-```text
-+--------------------+
-|<<  REVERSE RADAR >>|
-|DIST  : 110 cm [SAFE|
-|ZONE  : GREEN / OK  |
-|BAR   :[|||||||||||||
-+--------------------+
-```
-
-### 10. Reverse Distance Alert Screen (Critical Stop ≤ 15 cm)
-```text
-+--------------------+
-|********************|
-|<<  REVERSE RADAR >>|
-|! STOP:  10 cm DIST !
-|********************|
-+--------------------+
-```
-
-### 11. Reverse Distance Sensor Disconnected Screen (Last Valid Reading Retained)
-```text
-+--------------------+
-|<<  REVERSE RADAR >>|
-|DIST  :  60 cm [DISC|
-|ZONE  : SENSOR LOST |
-|BAR   :[!!!!!!!!!]|
-+--------------------+
-```
-
-### 12. Reverse Node Disconnection Warning Screen
-```text
-+--------------------+
-|! CAN BUS WARNING ! |
-|NODE: REVERSE RADAR |
-|ERROR: NO RESPONSE  |
-|STATUS: OFFLINE /ERR|
-+--------------------+
-```
+### 5. CAN Bus Node Disconnection Error Warning Screen
+![CAN Bus Node Error Screen](Documentation/Images/lcd_node_error.png)
 
 ---
 
@@ -292,6 +187,12 @@ CAN-Based-Engine-Monitoring-and-Vehicle-Control-System/
 │
 ├── Documentation/                     # Engineering Documentation & Schematics
 │   ├── Images/                        # System Diagrams & Vector Block Diagrams
+│   │   ├── system_architecture_diagram.jpg # High-Res System Architecture Image
+│   │   ├── lcd_splash_screen.png      # Boot Screen PNG Card
+│   │   ├── lcd_dashboard_normal.png    # Main Dashboard PNG Card
+│   │   ├── lcd_window_control.png     # Window Screen PNG Card
+│   │   ├── lcd_reverse_radar.png      # Reverse Radar PNG Card
+│   │   ├── lcd_node_error.png         # Node Error Screen PNG Card
 │   │   └── system_block_diagram.svg   # Vector Network Block Diagram
 │   ├── PINOUT_AND_WIRING.md           # LPC2129 Pinout & Circuit Wiring Tables
 │   ├── SYSTEM_DOCUMENTATION.md        # Technical System Specifications
