@@ -31,7 +31,7 @@ Unlike simplistic single-board prototypes, this project implements a **true 3-no
 
 ## 🏛️ System Architecture & Schematic Diagram
 
-![System Architecture Diagram](https://raw.githubusercontent.com/shruti-sahu/CAN-Based-Engine-Monitoring-and-Vehicle-Control-System/main/Documentation/Images/system_architecture_diagram.jpg)
+![System Architecture Diagram](Documentation/Images/system_architecture_diagram.jpg)
 
 ```text
                            =======================================================
